@@ -1,7 +1,10 @@
 import {
   type TodoPriority,
   type TodoStatus,
-} from '../types/Todo'
+  type TodoFilter,
+  TODO_STATUSES,
+  TODO_PRIORITIES,
+} from '../types/todo.type.ts'
 
 const STATUS_LABELS: Record<TodoStatus, string> = {
   todo: 'To do',

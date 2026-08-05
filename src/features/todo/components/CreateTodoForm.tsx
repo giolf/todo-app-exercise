@@ -1,8 +1,15 @@
 import { useState } from 'react'
-import type { CreateTodoInput, TodoKind } from '../types/Todo'
-import { TODO_PRIORITIES } from '../types/Todo'
-import { ValidationError } from '../validation'
 import Button from '../../shared/components/Button'
+import {
+  type CreateTodoInput,
+  type TodoKind,
+  type TodoPriority,
+} from '../types/todo.type.ts'
+
+import { TODO_PRIORITIES } from '../types/todo.type.ts'
+
+const fieldClass =
+  'border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
 
 export default function CreateTodoForm({
   onCreate,
@@ -12,48 +19,42 @@ export default function CreateTodoForm({
   onCancel: () => void
 }) {
   const [kind, setKind] = useState<TodoKind>('standard')
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState<(typeof TODO_PRIORITIES)[number]>('low')
-  const [assignee, setAssignee] = useState('')
-  const [project, setProject] = useState('')
-  const [topic, setTopic] = useState('')
-  const [resourceUrl, setResourceUrl] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
+
+    const data = new FormData(event.currentTarget)
+    const title = String(data.get('title') ?? '')
+    const description = String(data.get('description') ?? '')
+    const priority = String(data.get('priority') ?? 'low') as TodoPriority
 
     try {
       if (kind === 'work') {
         onCreate({
-          kind: 'work',
+          kind,
           title,
           description,
           priority,
-          assignee,
-          project,
+          assignee: String(data.get('assignee') ?? ''),
+          project: String(data.get('project') ?? ''),
         })
       } else if (kind === 'learning') {
+        const resourceUrl = String(data.get('resourceUrl') ?? '').trim()
         onCreate({
-          kind: 'learning',
+          kind,
           title,
           description,
           priority,
-          topic,
+          topic: String(data.get('topic') ?? ''),
           resourceUrl: resourceUrl || undefined,
         })
       } else {
-        onCreate({
-          kind: 'standard',
-          title,
-          description,
-          priority,
-        })
+        onCreate({ kind: 'standard', title, description, priority })
       }
     } catch (err) {
-      setError(err instanceof ValidationError ? err.message : 'Could not create todo.')
+      setError(err instanceof Error ? err.message : 'Could not create todo.')
     }
   }
 
@@ -68,7 +69,7 @@ export default function CreateTodoForm({
       <label className='flex flex-col gap-1 text-sm'>
         Type
         <select
-          className='border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
+          className={fieldClass}
           value={kind}
           onChange={(event) => setKind(event.target.value as TodoKind)}
         >
@@ -80,32 +81,17 @@ export default function CreateTodoForm({
 
       <label className='flex flex-col gap-1 text-sm'>
         Title
-        <input
-          required
-          className='border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
+        <input name='title' required className={fieldClass} />
       </label>
 
       <label className='flex flex-col gap-1 text-sm'>
         Description
-        <textarea
-          className='border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)] min-h-20'
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-        />
+        <textarea name='description' className={`${fieldClass} min-h-20`} />
       </label>
 
       <label className='flex flex-col gap-1 text-sm'>
         Priority
-        <select
-          className='border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
-          value={priority}
-          onChange={(event) =>
-            setPriority(event.target.value as (typeof TODO_PRIORITIES)[number])
-          }
-        >
+        <select name='priority' defaultValue='low' className={fieldClass}>
           {TODO_PRIORITIES.map((value) => (
             <option key={value} value={value}>
               {value}
@@ -118,21 +104,11 @@ export default function CreateTodoForm({
         <>
           <label className='flex flex-col gap-1 text-sm'>
             Assignee
-            <input
-              required
-              className='border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
-              value={assignee}
-              onChange={(event) => setAssignee(event.target.value)}
-            />
+            <input name='assignee' required className={fieldClass} />
           </label>
           <label className='flex flex-col gap-1 text-sm'>
             Project
-            <input
-              required
-              className='border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
-              value={project}
-              onChange={(event) => setProject(event.target.value)}
-            />
+            <input name='project' required className={fieldClass} />
           </label>
         </>
       )}
@@ -141,21 +117,11 @@ export default function CreateTodoForm({
         <>
           <label className='flex flex-col gap-1 text-sm'>
             Topic
-            <input
-              required
-              className='border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
-              value={topic}
-              onChange={(event) => setTopic(event.target.value)}
-            />
+            <input name='topic' required className={fieldClass} />
           </label>
           <label className='flex flex-col gap-1 text-sm'>
             Resource URL
-            <input
-              type='url'
-              className='border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
-              value={resourceUrl}
-              onChange={(event) => setResourceUrl(event.target.value)}
-            />
+            <input name='resourceUrl' type='url' className={fieldClass} />
           </label>
         </>
       )}
