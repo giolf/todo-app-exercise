@@ -1,16 +1,22 @@
 import type {
-  CreateTodoInput,
-  TodoFilter,
-  TodoPriority,
-  TodoStatus,
+  // CreateTodoInput,
+  // TodoFilter,
+  // TodoPriority,
+  // TodoStatus,
   Todo,
 } from '../types/todo.type.ts'
-import todos from './../../../todos.json' 
+// import todos from './../../../todos.json' 
 
-export function fetchTodos(): Todo[] {
-  return todos.todos
-
+export async function fetchTodos(): Promise<Todo[]> {
+  const response = await fetch('/todos.json')
+  if (!response.ok) {
+    throw new Error('Failed to fetch todos')
+  }
+  const data = await response.json()
+  console.log(data)
+  return data.todos as Todo[]
 }
+
 
 // function nextId(todos: TodoType[]): number {
 //   if (todos.length === 0) return 1
