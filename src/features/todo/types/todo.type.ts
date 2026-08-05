@@ -7,9 +7,6 @@ export type TodoFilter = {
   priority: TodoPriority | 'all'
 }
 
-export const TODO_STATUSES: TodoStatus[] = ['todo', 'in_progress', 'done', 'blocked']
-export const TODO_PRIORITIES: TodoPriority[] = ['low', 'medium', 'high']
-
 export type BaseTodo = {
   id: number
   title: string
@@ -32,14 +29,8 @@ export type WorkTodo = BaseTodo & {
 }
 
 
-type CreateTodoBase = {
-  title: string
-  description: string
-  priority: TodoPriority
-}
-
 export type CreateTodoInput =
-  | (CreateTodoBase & { kind: 'standard' })
-  | (CreateTodoBase & { kind: 'work'; assignee: string; project: string })
-  | (CreateTodoBase & { kind: 'learning'; topic: string; resourceUrl?: string })
+  | (Omit<BaseTodo, 'id' | 'completed' | 'status'> & { kind: 'standard' })
+  | (Omit<BaseTodo, 'id' | 'completed' | 'status'> & { kind: 'work'; assignee: string; project: string })
+  | (Omit<BaseTodo, 'id' | 'completed' | 'status'> & { kind: 'learning'; topic: string; resourceUrl?: string })
 

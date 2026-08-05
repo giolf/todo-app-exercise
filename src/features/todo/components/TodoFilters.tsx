@@ -2,9 +2,9 @@ import {
   type TodoPriority,
   type TodoStatus,
   type TodoFilter,
-  TODO_STATUSES,
-  TODO_PRIORITIES,
 } from '../types/todo.type.ts'
+
+import { TODO_STATUSES, TODO_PRIORITIES } from '../const/todo.const.ts'
 
 const STATUS_LABELS: Record<TodoStatus, string> = {
   todo: 'To do',

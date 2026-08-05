@@ -14,12 +14,11 @@ const [todos, setTodos] = useState<Todo[]>([])
 const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
-    const fetchedTodos = async () => {
+    const loadTodos = async () => {
       const todos = await fetchTodos()
       setTodos(todos)
-      console.log(todos)
     }
-    fetchedTodos()
+    loadTodos()
   }, [])
 
   return (
@@ -28,10 +27,10 @@ const [isModalOpen, setIsModalOpen] = useState(false)
       <main className='flex-grow px-4 py-8'>
         <Filters filter={{ status: 'all', priority: 'all' }} onChange={() => {}} />
         <TodoList todos={todos} />
-        <Button text='Add Todo' onClick={() => { setIsModalOpen(true) }} />
+        <Button text='Add Todo' onClick={() => setIsModalOpen(true)} />
         {isModalOpen && ( 
-        <Modal title='Add Todo' onClose={() => { setIsModalOpen(false) }}>
-          <CreateTodoForm onCreate={() => {  }} onCancel={() => { setIsModalOpen(false) }} />
+        <Modal title='Add Todo' onClose={() => setIsModalOpen(false) }>
+          <CreateTodoForm onCreate={() => {} } onCancel={() => setIsModalOpen(false) } />
         </Modal>
         )}
       </main>

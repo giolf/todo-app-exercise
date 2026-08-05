@@ -6,7 +6,7 @@ import {
   type TodoPriority,
 } from '../types/todo.type.ts'
 
-import { TODO_PRIORITIES } from '../types/todo.type.ts'
+import { TODO_PRIORITIES } from '../const/todo.const.ts'
 
 const fieldClass =
   'border border-[var(--border)] rounded-md px-3 py-2 bg-[var(--bg)]'
