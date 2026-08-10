@@ -1,4 +1,4 @@
-import type { TodoType, TodoStatus } from '../types/Todo'
+import type { TodoKind, TodoStatus, Todo } from '../types/todo.type.ts'
 
 const STATUS_LABELS: Record<TodoStatus, string> = {
   todo: 'To do',
@@ -7,7 +7,7 @@ const STATUS_LABELS: Record<TodoStatus, string> = {
   blocked: 'Blocked',
 }
 
-function kindLabel(kind: TodoType['kind']): string {
+function kindLabel(kind: TodoKind): string {
   switch (kind) {
     case 'work':
       return 'Work'
@@ -18,7 +18,7 @@ function kindLabel(kind: TodoType['kind']): string {
   }
 }
 
-export default function TodoItem({ todo }: { todo: TodoType }) {
+export default function TodoItem({ todo }: { todo: Todo }) {
   return (
     <article className='border border-[var(--border)] rounded-lg p-4 text-left space-y-3 bg-[var(--code-bg)]/40'>
       <div className='flex flex-wrap items-start justify-between gap-2'>
