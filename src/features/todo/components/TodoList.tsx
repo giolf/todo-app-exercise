@@ -1,7 +1,7 @@
-import type { TodoType } from '../types/Todo'
+import type { Todo } from '../types/todo.type.ts'
 import TodoItem from './TodoItem'
 
-export default function TodoList({ todos }: { todos: TodoType[] }) {
+export default function TodoList({ todos }: { todos: Todo[] }) {
   if (todos.length === 0) {
     return (
       <p className='text-[var(--text)] text-sm mb-6'>

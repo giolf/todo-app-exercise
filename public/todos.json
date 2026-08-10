@@ -1,0 +1,46 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "kind": "standard",
+      "title": "Plan weekly groceries",
+      "description": "Write a shopping list for the week.",
+      "completed": false,
+      "status": "todo",
+      "priority": "low"
+    },
+    {
+      "id": 2,
+      "kind": "work",
+      "title": "Prepare sprint demo",
+      "description": "Collect screenshots and talking points.",
+      "completed": false,
+      "status": "in_progress",
+      "priority": "medium",
+      "assignee": "Alex",
+      "project": "Todo App"
+    },
+    {
+      "id": 3,
+      "kind": "learning",
+      "title": "Study TypeScript classes",
+      "description": "Review encapsulation and inheritance.",
+      "completed": true,
+      "priority": "high",
+      "status": "done",
+      "topic": "TypeScript OOP",
+      "resourceUrl": "https://www.typescriptlang.org/docs/handbook/2/classes.html"
+    },
+    {
+      "id": 4,
+      "kind": "work",
+      "title": "Unblock API integration",
+      "description": "Waiting on credentials from DevOps.",
+      "completed": false,
+      "priority": "high",
+      "status": "blocked",
+      "assignee": "Sam",
+      "project": "Backend sync"
+    }
+  ]
+}
