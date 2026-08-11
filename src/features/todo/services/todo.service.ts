@@ -5,17 +5,24 @@ import type {
   // TodoStatus,
   Todo,
 } from '../types/todo.type.ts'
-// import todos from './../../../todos.json' 
 
-export async function fetchTodos(): Promise<Todo[]> {
-  const response = await fetch('/todos.json')
-  if (!response.ok) {
-    throw new Error('Failed to fetch todos')
-  }
-  const data = await response.json()
-  console.log(data)
-  return data.todos as Todo[]
+import { loadTodos as loadCachedTodos, saveTodos as saveCachedTodos } from '../repositories/localStorage.repository.ts'
+import { loadTodos as loadTodosFromJson } from '../repositories/jsonFile.repository.ts'
+
+
+
+export async function getTodos(): Promise<Todo[]> {
+  const cachedTodos = loadCachedTodos()
+
+  if (cachedTodos.length > 0) return cachedTodos
+
+  const todosFromJson = await loadTodosFromJson()
+  saveCachedTodos(todosFromJson)
+  return todosFromJson 
+  
 }
+
+
 
 
 // function nextId(todos: TodoType[]): number {

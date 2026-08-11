@@ -1,7 +1,7 @@
 import Footer from './features/core/components/Footer'
 import Header from './features/core/components/Header'
 import TodoList from './features/todo/components/TodoList'
-import { fetchTodos } from './features/todo/services/todo.service.ts'
+import { getTodos } from './features/todo/services/todo.service.ts'
 import { useEffect, useState } from 'react'
 import type { Todo } from './features/todo/types/todo.type'
 import Filters from './features/todo/components/TodoFilters'
@@ -15,7 +15,7 @@ const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const loadTodos = async () => {
-      const todos = await fetchTodos()
+      const todos = await getTodos()
       setTodos(todos)
     }
     loadTodos()
