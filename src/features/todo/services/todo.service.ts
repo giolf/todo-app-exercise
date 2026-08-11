@@ -1,5 +1,5 @@
 import type {
-  // CreateTodoInput,
+  CreateTodoInput,
   // TodoFilter,
   // TodoPriority,
   // TodoStatus,
@@ -22,7 +22,22 @@ export async function getTodos(): Promise<Todo[]> {
   
 }
 
+function nextId(todos: Todo[]):number {
+  if (todos.length === 0) return 1
+  return Math.max(...todos.map(todo=>todo.id)) + 1
+}
 
+export function createTodo(input: CreateTodoInput, todos: Todo[]): Todo[] {
+  const newTodo: Todo = {
+    ...input,
+    id: nextId(todos),
+    status: 'todo',
+    completed: false,
+  }
+  const nextTodos = [...todos, newTodo]
+  saveCachedTodos(nextTodos)
+  return nextTodos
+}
 
 
 // function nextId(todos: TodoType[]): number {
