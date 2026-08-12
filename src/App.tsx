@@ -1,9 +1,9 @@
 import Footer from './features/core/components/Footer'
 import Header from './features/core/components/Header'
 import TodoList from './features/todo/components/TodoList'
-import { fetchTodos } from './features/todo/services/todo.service.ts'
+import { getTodos, createTodo } from './features/todo/services/todo.service.ts'
 import { useEffect, useState } from 'react'
-import type { Todo } from './features/todo/types/todo.type'
+import type { Todo, CreateTodoInput } from './features/todo/types/todo.type'
 import Filters from './features/todo/components/TodoFilters'
 import CreateTodoForm from './features/todo/components/CreateTodoForm'
 import Button from './features/shared/components/Button'
@@ -15,11 +15,17 @@ const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const loadTodos = async () => {
-      const todos = await fetchTodos()
+      const todos = await getTodos()
       setTodos(todos)
     }
     loadTodos()
   }, [])
+
+  const handleCreateTodo = async (input: CreateTodoInput) => {
+    const newTodo = await createTodo(input)
+    setTodos((prev) => [...prev, newTodo])
+    setIsModalOpen(false)
+  }
 
   return (
     <div className='flex flex-col min-h-screen text-left'>
@@ -30,7 +36,7 @@ const [isModalOpen, setIsModalOpen] = useState(false)
         <Button text='Add Todo' onClick={() => setIsModalOpen(true)} />
         {isModalOpen && ( 
         <Modal title='Add Todo' onClose={() => setIsModalOpen(false) }>
-          <CreateTodoForm onCreate={() => {} } onCancel={() => setIsModalOpen(false) } />
+          <CreateTodoForm onCreate={handleCreateTodo } onCancel={() => setIsModalOpen(false) } />
         </Modal>
         )}
       </main>

@@ -1,20 +1,44 @@
 import type {
-  // CreateTodoInput,
+  CreateTodoInput,
   // TodoFilter,
   // TodoPriority,
   // TodoStatus,
   Todo,
 } from '../types/todo.type.ts'
-// import todos from './../../../todos.json' 
 
-export async function fetchTodos(): Promise<Todo[]> {
-  const response = await fetch('/todos.json')
-  if (!response.ok) {
-    throw new Error('Failed to fetch todos')
+import { fetchTodos as fetchCachedTodos, saveTodos as saveCachedTodos } from '../repositories/localStorage.repository.ts'
+import { fetchTodos as fetchTodosFromJson } from '../repositories/jsonFile.repository.ts'
+
+
+
+export async function getTodos(): Promise<Todo[]> {
+  const cachedTodos = fetchCachedTodos()
+
+  if (cachedTodos.length > 0) return cachedTodos
+
+  const todosFromJson = await fetchTodosFromJson()
+  saveCachedTodos(todosFromJson)
+  return todosFromJson 
+  
+}
+
+function nextId(todos: Todo[]):number {
+  if (todos.length === 0) return 1
+  return Math.max(...todos.map(todo=>todo.id)) + 1
+}
+
+export async function createTodo(input: CreateTodoInput): Promise<Todo> {
+  const todos = fetchCachedTodos()
+  const newTodo: Todo = {
+    ...input,
+    id: nextId(todos),
+    status: 'todo',
+    completed: false,
   }
-  const data = await response.json()
-  console.log(data)
-  return data.todos as Todo[]
+
+  saveCachedTodos([...todos, newTodo])
+  console.log('newTodo', newTodo)
+  return newTodo
 }
 
 
