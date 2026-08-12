@@ -6,17 +6,17 @@ import type {
   Todo,
 } from '../types/todo.type.ts'
 
-import { loadTodos as loadCachedTodos, saveTodos as saveCachedTodos } from '../repositories/localStorage.repository.ts'
-import { loadTodos as loadTodosFromJson } from '../repositories/jsonFile.repository.ts'
+import { fetchTodos as fetchCachedTodos, saveTodos as saveCachedTodos } from '../repositories/localStorage.repository.ts'
+import { fetchTodos as fetchTodosFromJson } from '../repositories/jsonFile.repository.ts'
 
 
 
 export async function getTodos(): Promise<Todo[]> {
-  const cachedTodos = loadCachedTodos()
+  const cachedTodos = fetchCachedTodos()
 
   if (cachedTodos.length > 0) return cachedTodos
 
-  const todosFromJson = await loadTodosFromJson()
+  const todosFromJson = await fetchTodosFromJson()
   saveCachedTodos(todosFromJson)
   return todosFromJson 
   
@@ -27,16 +27,17 @@ function nextId(todos: Todo[]):number {
   return Math.max(...todos.map(todo=>todo.id)) + 1
 }
 
-export function createTodo(input: CreateTodoInput, todos: Todo[]): Todo[] {
+export async function createTodo(input: CreateTodoInput, todos: Todo[]): Promise<Todo> {
   const newTodo: Todo = {
     ...input,
     id: nextId(todos),
     status: 'todo',
     completed: false,
   }
-  const nextTodos = [...todos, newTodo]
-  saveCachedTodos(nextTodos)
-  return nextTodos
+
+  saveCachedTodos([...todos, newTodo])
+  console.log('newTodo', newTodo)
+  return newTodo
 }
 
 
