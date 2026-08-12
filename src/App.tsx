@@ -22,7 +22,7 @@ const [isModalOpen, setIsModalOpen] = useState(false)
   }, [])
 
   const handleCreateTodo = async (input: CreateTodoInput) => {
-    const newTodo = await createTodo(input, todos)
+    const newTodo = await createTodo(input)
     setTodos((prev) => [...prev, newTodo])
     setIsModalOpen(false)
   }

@@ -27,7 +27,8 @@ function nextId(todos: Todo[]):number {
   return Math.max(...todos.map(todo=>todo.id)) + 1
 }
 
-export async function createTodo(input: CreateTodoInput, todos: Todo[]): Promise<Todo> {
+export async function createTodo(input: CreateTodoInput): Promise<Todo> {
+  const todos = fetchCachedTodos()
   const newTodo: Todo = {
     ...input,
     id: nextId(todos),
