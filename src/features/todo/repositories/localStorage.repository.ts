@@ -4,7 +4,7 @@ import type { Todo } from '../types/todo.type'
 const STORAGE_KEY = 'todos'
 
 
-export function loadTodos(): Todo[] {
+export function fetchTodos(): Todo[] {
   const raw = localStorage.getItem(STORAGE_KEY)
   if (raw === null) return []
   return JSON.parse(raw) as Todo[]
