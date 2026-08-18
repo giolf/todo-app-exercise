@@ -3,14 +3,18 @@ import Header from './features/core/components/Header'
 import TodoList from './features/todo/components/TodoList'
 import { getTodos, createTodo } from './features/todo/services/todo.service.ts'
 import { useEffect, useState } from 'react'
-import type { Todo, CreateTodoInput } from './features/todo/types/todo.type'
+import type {
+  Todo,
+  CreateTodoInput,
+  TodoFilter,
+  TodoPriority,
+  TodoStatus,
+} from './features/todo/types/todo.type'
 import Filters from './features/todo/components/TodoFilters'
 import CreateTodoForm from './features/todo/components/CreateTodoForm'
 import Button from './features/shared/components/Button'
 import Modal from './features/shared/components/Modal'
 import { filterTodosBy } from './features/todo/services/todo.service'
-import type { TodoFilter } from './features/todo/types/todo.type'
-import type { TodoPriority, TodoStatus } from './features/todo/types/todo.type'
 
 export default function App() {
 const [todos, setTodos] = useState<Todo[]>([])
