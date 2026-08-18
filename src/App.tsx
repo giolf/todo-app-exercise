@@ -40,10 +40,6 @@ const [filter, setFilter] = useState<TodoFilter>({ status: 'all', priority: 'all
     const todoValues = Object.values(filter) as (TodoPriority | TodoStatus)[]
     const filteredTodos = await filterTodosBy(todoProperties, todoValues)
     setFilter(filter)
-    console.log('filteredTodos', filteredTodos)
-    console.log('filter', filter)
-    console.log('todoProperties', todoProperties)
-    console.log('todoValues', todoValues)
     setTodos(filteredTodos)
   }
 
