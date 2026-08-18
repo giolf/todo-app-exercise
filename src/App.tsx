@@ -15,6 +15,7 @@ import type { TodoPriority, TodoStatus } from './features/todo/types/todo.type'
 export default function App() {
 const [todos, setTodos] = useState<Todo[]>([])
 const [isModalOpen, setIsModalOpen] = useState(false)
+const [filter, setFilter] = useState<TodoFilter>({ status: 'all', priority: 'all' })
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -29,10 +30,16 @@ const [isModalOpen, setIsModalOpen] = useState(false)
     setTodos((prev) => [...prev, newTodo])
     setIsModalOpen(false)
   }
+
   const handleFilterChange = async (filter: TodoFilter) => {
     const todoProperties = Object.keys(filter) as (keyof Pick<Todo, "status" | "priority">)[]
     const todoValues = Object.values(filter) as (TodoPriority | TodoStatus)[]
     const filteredTodos = await filterTodosBy(todoProperties, todoValues)
+    setFilter(filter)
+    console.log('filteredTodos', filteredTodos)
+    console.log('filter', filter)
+    console.log('todoProperties', todoProperties)
+    console.log('todoValues', todoValues)
     setTodos(filteredTodos)
   }
 
@@ -40,7 +47,7 @@ const [isModalOpen, setIsModalOpen] = useState(false)
     <div className='flex flex-col min-h-screen text-left'>
       <Header />
       <main className='flex-grow px-4 py-8'>
-        <Filters filter={{ status: 'all', priority: 'all' }} onChange={handleFilterChange} />
+        <Filters filter={filter} onChange={handleFilterChange} />
         <TodoList todos={todos} />
         <Button text='Add Todo' onClick={() => setIsModalOpen(true)} />
         {isModalOpen && ( 
