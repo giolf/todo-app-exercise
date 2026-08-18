@@ -1,8 +1,8 @@
 import type {
   CreateTodoInput,
-  // TodoFilter,
-  TodoPriority,
-  TodoStatus,
+  TodoFilter,
+  // TodoPriority,
+  // TodoStatus,
   Todo,
 } from '../types/todo.type.ts'
 
@@ -41,10 +41,17 @@ export async function createTodo(input: CreateTodoInput): Promise<Todo> {
   return newTodo
 }
 
-export async function filterTodosBy(properties: (keyof Pick<Todo, "status" | "priority">)[], values: (TodoPriority | TodoStatus)[]): Promise<Todo[]> {
+export async function filterTodosBy(
+  properties: (keyof Pick<Todo, 'status' | 'priority'>)[],
+  values: Array<TodoFilter[keyof TodoFilter]>,
+): Promise<Todo[]> {
   const todos = fetchCachedTodos()
-  return todos.filter((todo) => properties.every((property) => values.filter((value) => value === todo[property])))
+  return todos.filter((todo) => properties.every((property, i) => {
+    const value = values[i]
+    return value === 'all' || todo[property] === value
+  }))
 }
+
 
 // function nextId(todos: TodoType[]): number {
 //   if (todos.length === 0) return 1
