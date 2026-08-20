@@ -1,4 +1,5 @@
-import type { TodoKind, TodoStatus, Todo } from '../types/todo.type.ts'
+import { TODO_STATUSES, TODO_PRIORITIES } from '../const/todo.const.ts'
+import type { TodoKind, TodoStatus, Todo, TodoPriority } from '../types/todo.type.ts'
 
 const STATUS_LABELS: Record<TodoStatus, string> = {
   todo: 'To do',
@@ -18,7 +19,7 @@ function kindLabel(kind: TodoKind): string {
   }
 }
 
-export default function TodoItem({ todo }: { todo: Todo }) {
+export default function TodoItem({ todo, updateTodo }: { todo: Todo, updateTodo: (todo: Todo) => void }) {
   return (
     <article className='border border-[var(--border)] rounded-lg p-4 text-left space-y-3 bg-[var(--code-bg)]/40'>
       <div className='flex flex-wrap items-start justify-between gap-2'>
@@ -28,9 +29,23 @@ export default function TodoItem({ todo }: { todo: Todo }) {
           </p>
           <h3 className='text-lg m-0 text-[var(--text-h)]'>{todo.title}</h3>
         </div>
-        <span className='text-xs px-2 py-1 rounded-full bg-[var(--accent-bg)] border border-[var(--accent-border)]'>
-          {todo.priority} priority
-        </span>
+        <label className='flex flex-col gap-1 text-xs'>
+          Priority
+          <select
+            name='priority'
+            className='border border-[var(--border)] rounded-md px-2 py-1 bg-[var(--bg)] text-[var(--text-h)]'
+            value={todo.priority}
+            onChange={(e) =>
+              updateTodo({ ...todo, priority: e.target.value as TodoPriority })
+            }
+          >
+            {TODO_PRIORITIES.map((priority) => (
+              <option key={priority} value={priority}>
+                {priority}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
       {todo.description && (
@@ -64,9 +79,23 @@ export default function TodoItem({ todo }: { todo: Todo }) {
         </p>
       )}
 
-      <p className='text-sm m-0 text-[var(--text)]'>
-        Status: {STATUS_LABELS[todo.status]}
-      </p>
+      <label className='flex flex-col gap-1 text-sm'>
+        Status
+        <select
+          name='status'
+          className='border border-[var(--border)] rounded-md px-2 py-1 bg-[var(--bg)] text-[var(--text-h)]'
+          value={todo.status}
+          onChange={(e) =>
+            updateTodo({ ...todo, status: e.target.value as TodoStatus })
+          }
+        >
+          {TODO_STATUSES.map((status) => (
+            <option key={status} value={status}>
+              {STATUS_LABELS[status]}
+            </option>
+          ))}
+        </select>
+      </label>
     </article>
   )
 }

@@ -52,6 +52,15 @@ export async function filterTodosBy(
   }))
 }
 
+export async function updateTodo(updated: Todo): Promise<Todo> {
+  const todos = fetchCachedTodos()
+  const updatedTodos = todos.map((todo) =>
+    todo.id === updated.id ? updated : todo,
+  )
+
+  saveCachedTodos(updatedTodos)
+  return updated
+}
 
 // function nextId(todos: TodoType[]): number {
 //   if (todos.length === 0) return 1

@@ -14,12 +14,12 @@ import Filters from './features/todo/components/TodoFilters'
 import CreateTodoForm from './features/todo/components/CreateTodoForm'
 import Button from './features/shared/components/Button'
 import Modal from './features/shared/components/Modal'
-import { filterTodosBy } from './features/todo/services/todo.service'
+import { filterTodosBy, updateTodo } from './features/todo/services/todo.service'
 
 export default function App() {
-const [todos, setTodos] = useState<Todo[]>([])
-const [isModalOpen, setIsModalOpen] = useState(false)
-const [filter, setFilter] = useState<TodoFilter>({ status: 'all', priority: 'all' })
+  const [todos, setTodos] = useState<Todo[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [filter, setFilter] = useState<TodoFilter>({ status: 'all', priority: 'all' })
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -43,17 +43,24 @@ const [filter, setFilter] = useState<TodoFilter>({ status: 'all', priority: 'all
     setTodos(filteredTodos)
   }
 
+  const handleUpdateTodo = async (todo: Todo) => {
+    const updated = await updateTodo(todo)
+    setTodos((prev) =>
+      prev.map((item) => (item.id === updated.id ? updated : item)),
+    )
+  }
+
   return (
     <div className='flex flex-col min-h-screen text-left'>
       <Header />
       <main className='flex-grow px-4 py-8'>
         <Filters filter={filter} onChange={handleFilterChange} />
-        <TodoList todos={todos} />
+        <TodoList todos={todos} updateTodo={handleUpdateTodo} />
         <Button text='Add Todo' onClick={() => setIsModalOpen(true)} />
-        {isModalOpen && ( 
-        <Modal title='Add Todo' onClose={() => setIsModalOpen(false) }>
-          <CreateTodoForm onCreate={handleCreateTodo } onCancel={() => setIsModalOpen(false) } />
-        </Modal>
+        {isModalOpen && (
+          <Modal title='Add Todo' onClose={() => setIsModalOpen(false)}>
+            <CreateTodoForm onCreate={handleCreateTodo} onCancel={() => setIsModalOpen(false)} />
+          </Modal>
         )}
       </main>
       <Footer />
