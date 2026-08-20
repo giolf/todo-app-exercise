@@ -31,9 +31,9 @@ Open the URL from the terminal (usually `http://localhost:5173`).
 
 ## OOP Requirements
 
-This project maps OOP ideas onto TypeScript modules and types (no class hierarchy).
+This project maps OOP principles onto TypeScript modules and types.
 
-- **Encapsulation** — hide internals behind a small public API. The service owns `nextId` and default `status` / `completed`. Repositories own the `localStorage` key, JSON parsing, and `fetch('/todos.json')`. UI calls `getTodos` / `createTodo` / `filterTodosBy` and does not talk to storage directly.
+- **Encapsulation** — hide internals behind a small public API. The service owns `nextId` and default `status` / `completed`. Repositories own the `localStorage` key, JSON parsing, and `fetch('/todos.json')`. UI calls `getTodos` / `createTodo` / `filterTodosBy` / `updateTodo` and does not talk to storage directly.
 - **Inheritance** — specialized todos reuse a shared base. `StandardTodo`, `WorkTodo`, and `LearningTodo` are `BaseTodo` plus a `kind` and extra fields (`assignee` / `project`, `topic`).
 - **Polymorphism** — callers treat every item as `Todo`. Kind-specific fields are only read after narrowing on `kind`. Both repositories expose `fetchTodos()`; `getTodos` reads `localStorage` first and falls back to the JSON file.
 
@@ -49,18 +49,33 @@ A feature is a business entity. Today that is `todo`. Everything else is reusabl
 | `shared` | Reusable UI with no todo knowledge (`Button`, `Modal`)    |
 | `core`   | App shell on every page (`Header`, `Footer`)              |
 
+## Domain layering
+
+```
+UI (components)  →  App.tsx  →  service  →  repository  →  storage
+```
+
+| Layer | Where | Responsibility |
+| ----- | ----- | -------------- |
+| UI | `todo/components`, `shared` | Render and collect user input. Call handlers from App. No storage. |
+| App | `App.tsx` | Own React state (`todos`, `filter`, `visibleTodos`). Call the service. Pass data and handlers down. |
+| Service | `todo/services` | Business rules: create (ids, defaults), filter, update. Talks to repositories only. |
+| Repository | `todo/repositories` | Persist and load: `localStorage` and seed `todos.json`. Hide keys, JSON, and `fetch`. |
+| Types | `todo/types` | Shared shapes (`Todo`, `TodoFilter`, …) used across layers. |
+
+
 ## Project Structure
 
 ```
 src/
-  App.tsx
+  App.tsx           state + wiring (calls the todo service)
   features/
     core/           Header, Footer
     shared/         Button, Modal
     todo/
       components/   list, item, filters, create form
       types/        Todo, status, priority, create input
-      services/     create, filter, load
+      services/     create, filter, load, update
       repositories/ localStorage, JSON file
       const/        status and priority lists
 public/
