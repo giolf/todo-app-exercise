@@ -42,14 +42,14 @@ export async function createTodo(input: CreateTodoInput): Promise<Todo> {
 }
 
 export async function filterTodosBy(
-  properties: (keyof Pick<Todo, 'status' | 'priority'>)[],
-  values: Array<TodoFilter[keyof TodoFilter]>,
+  filter: TodoFilter,
 ): Promise<Todo[]> {
   const todos = fetchCachedTodos()
-  return todos.filter((todo) => properties.every((property, i) => {
-    const value = values[i]
-    return value === 'all' || todo[property] === value
-  }))
+  return todos.filter((todo) =>
+    (Object.entries(filter) as [keyof TodoFilter, TodoFilter[keyof TodoFilter]][]).every(
+      ([property, value]) => value === 'all' || todo[property] === value,
+    ),
+  )
 }
 
 export async function updateTodo(updated: Todo): Promise<Todo> {

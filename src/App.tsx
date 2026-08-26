@@ -7,8 +7,6 @@ import type {
   Todo,
   CreateTodoInput,
   TodoFilter,
-  TodoPriority,
-  TodoStatus,
 } from './features/todo/types/todo.type'
 import Filters from './features/todo/components/TodoFilters'
 import CreateTodoForm from './features/todo/components/CreateTodoForm'
@@ -18,7 +16,6 @@ import { filterTodosBy, updateTodo } from './features/todo/services/todo.service
 
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([])
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [filter, setFilter] = useState<TodoFilter>({ status: 'all', priority: 'all' })
 
@@ -30,31 +27,39 @@ export default function App() {
     loadTodos()
   }, [])
 
-  useEffect(() => {
-    const applyFilter = async () => {
-      const todoProperties = Object.keys(filter) as (keyof Pick<Todo, 'status' | 'priority'>)[]
-      const todoValues = Object.values(filter) as (TodoPriority | TodoStatus)[]
-      const filteredTodos = await filterTodosBy(todoProperties, todoValues)
-      setVisibleTodos(filteredTodos)
-    }
-    applyFilter()
-  }, [todos, filter])
+  function matchesFilter(todo: Todo, filter: TodoFilter): boolean {
+    const statusOk = filter.status === 'all' || todo.status === filter.status
+    const priorityOk = filter.priority === 'all' || todo.priority === filter.priority
+    return statusOk && priorityOk
+  }
+
 
   const handleCreateTodo = async (input: CreateTodoInput) => {
     const newTodo = await createTodo(input)
-    setTodos((prev) => [...prev, newTodo])
+
+    setTodos((prev) => {
+      if (matchesFilter(newTodo, filter))
+        return [...prev, newTodo]
+      else return prev
+    })
+    
     setIsModalOpen(false)
   }
 
-  const handleFilterChange = (next: TodoFilter) => {
-    setFilter(next)
+  const handleFilterChange = async (filter: TodoFilter) => {
+    const filteredTodos = await filterTodosBy(filter)
+    setFilter(filter)
+    setTodos(filteredTodos)
   }
 
   const handleUpdateTodo = async (todo: Todo) => {
     const updated = await updateTodo(todo)
-    setTodos((prev) =>
-      prev.map((item) => (item.id === updated.id ? updated : item)),
-    )
+    setTodos((prev) => {
+      if (!matchesFilter(updated, filter)) {
+        return prev.filter((item) => item.id !== updated.id)
+      }
+      return prev.map((item) => (item.id === updated.id ? updated : item))
+    })
   }
 
   return (
@@ -62,7 +67,7 @@ export default function App() {
       <Header />
       <main className='flex-grow px-4 py-8'>
         <Filters filter={filter} onChange={handleFilterChange} />
-        <TodoList todos={visibleTodos} updateTodo={handleUpdateTodo} />
+        <TodoList todos={todos} updateTodo={handleUpdateTodo} />
         <Button text='Add Todo' onClick={() => setIsModalOpen(true)} />
         {isModalOpen && (
           <Modal title='Add Todo' onClose={() => setIsModalOpen(false)}>
