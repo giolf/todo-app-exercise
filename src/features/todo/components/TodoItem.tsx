@@ -1,31 +1,15 @@
-import { TODO_STATUSES, TODO_PRIORITIES } from '../const/todo.const.ts'
-import type { TodoKind, TodoStatus, Todo, TodoPriority } from '../types/todo.type.ts'
+import { TODO_STATUSES, TODO_PRIORITIES, STATUS_LABELS, KIND_LABELS } from '../const/todo.const.ts'
+import type { TodoStatus, Todo, TodoPriority } from '../types/todo.type.ts'
 
-const STATUS_LABELS: Record<TodoStatus, string> = {
-  todo: 'To do',
-  in_progress: 'In progress',
-  done: 'Done',
-  blocked: 'Blocked',
-}
 
-function kindLabel(kind: TodoKind): string {
-  switch (kind) {
-    case 'work':
-      return 'Work'
-    case 'learning':
-      return 'Learning'
-    default:
-      return 'Standard'
-  }
-}
 
-export default function TodoItem({ todo, updateTodo }: { todo: Todo, updateTodo: (todo: Todo) => void }) {
+export default function TodoItem({ todo, onTodoChange }: { todo: Todo, updateTodo: (todo: Todo) => void }) {
   return (
     <article className='border border-[var(--border)] rounded-lg p-4 text-left space-y-3 bg-[var(--code-bg)]/40'>
       <div className='flex flex-wrap items-start justify-between gap-2'>
         <div>
           <p className='text-xs uppercase tracking-wide text-[var(--text)] m-0 mb-1'>
-            {kindLabel(todo.kind)}
+            {KIND_LABELS[todo.kind]}
           </p>
           <h3 className='text-lg m-0 text-[var(--text-h)]'>{todo.title}</h3>
         </div>
@@ -36,7 +20,7 @@ export default function TodoItem({ todo, updateTodo }: { todo: Todo, updateTodo:
             className='border border-[var(--border)] rounded-md px-2 py-1 bg-[var(--bg)] text-[var(--text-h)]'
             value={todo.priority}
             onChange={(e) =>
-              updateTodo({ ...todo, priority: e.target.value as TodoPriority })
+              onTodoChange({ ...todo, priority: e.target.value as TodoPriority })
             }
           >
             {TODO_PRIORITIES.map((priority) => (
@@ -86,7 +70,7 @@ export default function TodoItem({ todo, updateTodo }: { todo: Todo, updateTodo:
           className='border border-[var(--border)] rounded-md px-2 py-1 bg-[var(--bg)] text-[var(--text-h)]'
           value={todo.status}
           onChange={(e) =>
-            updateTodo({ ...todo, status: e.target.value as TodoStatus })
+            onTodoChange({ ...todo, status: e.target.value as TodoStatus })
           }
         >
           {TODO_STATUSES.map((status) => (
