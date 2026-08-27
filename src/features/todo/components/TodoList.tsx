@@ -6,7 +6,7 @@ export default function TodoList({
   onTodoChange,
 }: {
   todos: Todo[]
-  updateTodo: (todo: Todo) => void
+  onTodoChange: (todo: Todo) => void
 }) {
   if (todos.length === 0) {
     return (

@@ -3,7 +3,7 @@ import type { TodoStatus, Todo, TodoPriority } from '../types/todo.type.ts'
 
 
 
-export default function TodoItem({ todo, onTodoChange }: { todo: Todo, updateTodo: (todo: Todo) => void }) {
+export default function TodoItem({ todo, onTodoChange }: { todo: Todo, onTodoChange: (todo: Todo) => void }) {
   return (
     <article className='border border-[var(--border)] rounded-lg p-4 text-left space-y-3 bg-[var(--code-bg)]/40'>
       <div className='flex flex-wrap items-start justify-between gap-2'>
