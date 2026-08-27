@@ -3,7 +3,7 @@ import TodoItem from './TodoItem'
 
 export default function TodoList({
   todos,
-  updateTodo,
+  onTodoChange,
 }: {
   todos: Todo[]
   updateTodo: (todo: Todo) => void
@@ -20,7 +20,7 @@ export default function TodoList({
     <ul className='space-y-4 list-none p-0 m-0 mb-6'>
       {todos.map((todo) => (
         <li key={todo.id}>
-          <TodoItem todo={todo} updateTodo={updateTodo} />
+          <TodoItem todo={todo} onTodoChange={onTodoChange} />
         </li>
       ))}
     </ul>

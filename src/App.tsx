@@ -67,7 +67,7 @@ export default function App() {
       <Header />
       <main className='flex-grow px-4 py-8'>
         <Filters filter={filter} onChange={handleFilterChange} />
-        <TodoList todos={todos} updateTodo={handleUpdateTodo} />
+        <TodoList todos={todos} onTodoChange={handleUpdateTodo} />
         <Button text='Add Todo' onClick={() => setIsModalOpen(true)} />
         {isModalOpen && (
           <Modal title='Add Todo' onClose={() => setIsModalOpen(false)}>
