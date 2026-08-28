@@ -1,7 +1,13 @@
 import type { Todo } from '../types/todo.type.ts'
 import TodoItem from './TodoItem'
 
-export default function TodoList({ todos }: { todos: Todo[] }) {
+export default function TodoList({
+  todos,
+  onTodoChange,
+}: {
+  todos: Todo[]
+  onTodoChange: (todo: Todo) => void
+}) {
   if (todos.length === 0) {
     return (
       <p className='text-[var(--text)] text-sm mb-6'>
@@ -14,7 +20,7 @@ export default function TodoList({ todos }: { todos: Todo[] }) {
     <ul className='space-y-4 list-none p-0 m-0 mb-6'>
       {todos.map((todo) => (
         <li key={todo.id}>
-          <TodoItem todo={todo} />
+          <TodoItem todo={todo} onTodoChange={onTodoChange} />
         </li>
       ))}
     </ul>
