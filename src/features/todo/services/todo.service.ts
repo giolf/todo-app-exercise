@@ -5,19 +5,19 @@ import type {
 } from '../types/todo.type.ts'
 
 import { fetchTodos as fetchCachedTodos, saveTodos as saveCachedTodos } from '../repositories/localStorage.repository.ts'
-import { fetchTodos as fetchTodosFromJson } from '../repositories/jsonFile.repository.ts'
 
 
+
+const BASE_URL = "http://localhost:3000/api/todos"
 
 export async function getTodos(): Promise<Todo[]> {
-  const cachedTodos = fetchCachedTodos()
 
-  if (cachedTodos.length > 0) return cachedTodos
+  const response = await fetch(BASE_URL)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch todos: ${response.statusText}`)
+  }
 
-  const todosFromJson = await fetchTodosFromJson()
-  saveCachedTodos(todosFromJson)
-  return todosFromJson 
-  
+  return response.json()
 }
 
 function nextId(todos: Todo[]):number {
