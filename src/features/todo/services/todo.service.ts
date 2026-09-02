@@ -4,9 +4,6 @@ import type {
   Todo,
 } from '../types/todo.type.ts'
 
-import { fetchTodos as fetchCachedTodos, saveTodos as saveCachedTodos } from '../repositories/localStorage.repository.ts'
-
-
 
 const BASE_URL = "http://localhost:3000/api/todos"
 
@@ -67,12 +64,22 @@ export async function filterTodosBy(
 
 
 export async function updateTodo(updated: Todo): Promise<Todo> {
-  const todos = fetchCachedTodos()
-  const updatedTodos = todos.map((todo) =>
-    todo.id === updated.id ? updated : todo,
-  )
+  const response = await fetch(`${BASE_URL}/${updated.id}`, {
+    method: "PATCH",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      status: updated.status,
+      priority: updated.priority,
+    }),
+  })
 
-  saveCachedTodos(updatedTodos)
-  return updated
+  if (!response.ok) {
+    throw new Error(`Failed to update todo: ${response.statusText}`)
+  }
+
+  return response.json()
 }
 
