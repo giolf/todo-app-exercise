@@ -40,13 +40,31 @@ export async function createTodo(input: CreateTodoInput): Promise<Todo> {
 export async function filterTodosBy(
   filter: TodoFilter,
 ): Promise<Todo[]> {
-  const todos = fetchCachedTodos()
-  return todos.filter((todo) =>
-    (Object.entries(filter) as [keyof TodoFilter, TodoFilter[keyof TodoFilter]][]).every(
-      ([property, value]) => value === 'all' || todo[property] === value,
-    ),
-  )
+
+  const params = new URLSearchParams()
+
+  console.log(params)
+
+  for (const [key, value] of Object.entries(filter)) {
+    if (value !== 'all') {
+      params.set(key, value)
+    }
+  }
+
+  console.log(params)
+
+  const query = params.toString()
+  const url = query ? `${BASE_URL}?${query}` : BASE_URL
+  console.log(url)
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error(`Failed to filter todos: ${response.statusText}`)
+  }
+
+  return response.json()
 }
+
 
 export async function updateTodo(updated: Todo): Promise<Todo> {
   const todos = fetchCachedTodos()
