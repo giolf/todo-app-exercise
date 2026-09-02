@@ -20,23 +20,21 @@ export async function getTodos(): Promise<Todo[]> {
   return response.json()
 }
 
-function nextId(todos: Todo[]):number {
-  if (todos.length === 0) return 1
-  return Math.max(...todos.map(todo=>todo.id)) + 1
-}
-
 export async function createTodo(input: CreateTodoInput): Promise<Todo> {
-  const todos = fetchCachedTodos()
-  const newTodo: Todo = {
-    ...input,
-    id: nextId(todos),
-    status: 'todo',
-    completed: false,
+  const response = await fetch(BASE_URL, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to create todo: ${response.statusText}`)
   }
 
-  saveCachedTodos([...todos, newTodo])
-  console.log('newTodo', newTodo)
-  return newTodo
+  return response.json()
 }
 
 export async function filterTodosBy(
