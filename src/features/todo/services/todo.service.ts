@@ -5,33 +5,44 @@ import type {
 } from '../types/todo.type.ts'
 
 
-const BASE_URL = "http://localhost:3000/api/todos"
+const BASE_URL = "http://localhost:3000/api"
 
-export async function getTodos(): Promise<Todo[]> {
+const DEFAULT_HEADERS = {
+  Accept: "application/json",
+  "Content-Type": "application/json",
+}
 
-  const response = await fetch(BASE_URL)
+async function apiCall<T>(
+  endpoint: string,
+  method: "GET" | "POST" | "PATCH" = "GET",
+  body?: unknown
+): Promise<T> {
+  const options: RequestInit = {
+    method,
+    headers: DEFAULT_HEADERS,
+  }
+
+  if (body) {
+    options.body = JSON.stringify(body)
+  }
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, options)
+
   if (!response.ok) {
-    throw new Error(`Failed to fetch todos: ${response.statusText}`)
+    throw new Error(`Failed to ${method} ${endpoint}: ${response.statusText}`)
   }
 
   return response.json()
 }
 
+export async function getTodos(): Promise<Todo[]> {
+  return apiCall<Todo[]>("/todos")
+}
+
 export async function createTodo(input: CreateTodoInput): Promise<Todo> {
-  const response = await fetch(BASE_URL, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(input),
-  })
 
-  if (!response.ok) {
-    throw new Error(`Failed to create todo: ${response.statusText}`)
-  }
+  return apiCall<Todo>("/todos", "POST", input)
 
-  return response.json()
 }
 
 export async function filterTodosBy(
@@ -40,46 +51,24 @@ export async function filterTodosBy(
 
   const params = new URLSearchParams()
 
-  console.log(params)
-
   for (const [key, value] of Object.entries(filter)) {
     if (value !== 'all') {
       params.set(key, value)
     }
   }
 
-  console.log(params)
-
   const query = params.toString()
-  const url = query ? `${BASE_URL}?${query}` : BASE_URL
-  console.log(url)
-  const response = await fetch(url)
 
-  if (!response.ok) {
-    throw new Error(`Failed to filter todos: ${response.statusText}`)
-  }
-
-  return response.json()
+  return apiCall<Todo[]>(query ? `/todos?${query}` : "/todos")
 }
 
-
 export async function updateTodo(updated: Todo): Promise<Todo> {
-  const response = await fetch(`${BASE_URL}/${updated.id}`, {
-    method: "PATCH",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+
+  return apiCall<Todo>(`/todos/${updated.id}`, "PATCH",
+    {
       status: updated.status,
       priority: updated.priority,
-    }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to update todo: ${response.statusText}`)
-  }
-
-  return response.json()
+    }
+  )
 }
 
