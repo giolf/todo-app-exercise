@@ -4,59 +4,71 @@ import type {
   Todo,
 } from '../types/todo.type.ts'
 
-import { fetchTodos as fetchCachedTodos, saveTodos as saveCachedTodos } from '../repositories/localStorage.repository.ts'
-import { fetchTodos as fetchTodosFromJson } from '../repositories/jsonFile.repository.ts'
 
+const BASE_URL = "http://localhost:3000/api"
 
-
-export async function getTodos(): Promise<Todo[]> {
-  const cachedTodos = fetchCachedTodos()
-
-  if (cachedTodos.length > 0) return cachedTodos
-
-  const todosFromJson = await fetchTodosFromJson()
-  saveCachedTodos(todosFromJson)
-  return todosFromJson 
-  
+const DEFAULT_HEADERS = {
+  Accept: "application/json",
+  "Content-Type": "application/json",
 }
 
-function nextId(todos: Todo[]):number {
-  if (todos.length === 0) return 1
-  return Math.max(...todos.map(todo=>todo.id)) + 1
+async function apiCall<T>(
+  endpoint: string,
+  method: "GET" | "POST" | "PATCH" = "GET",
+  body?: unknown
+): Promise<T> {
+  const options: RequestInit = {
+    method,
+    headers: DEFAULT_HEADERS,
+  }
+
+  if (body) {
+    options.body = JSON.stringify(body)
+  }
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, options)
+
+  if (!response.ok) {
+    throw new Error(`Failed to ${method} ${endpoint}: ${response.statusText}`)
+  }
+
+  return response.json()
+}
+
+export async function getTodos(): Promise<Todo[]> {
+  return apiCall<Todo[]>("/todos")
 }
 
 export async function createTodo(input: CreateTodoInput): Promise<Todo> {
-  const todos = fetchCachedTodos()
-  const newTodo: Todo = {
-    ...input,
-    id: nextId(todos),
-    status: 'todo',
-    completed: false,
-  }
 
-  saveCachedTodos([...todos, newTodo])
-  console.log('newTodo', newTodo)
-  return newTodo
+  return apiCall<Todo>("/todos", "POST", input)
+
 }
 
 export async function filterTodosBy(
   filter: TodoFilter,
 ): Promise<Todo[]> {
-  const todos = fetchCachedTodos()
-  return todos.filter((todo) =>
-    (Object.entries(filter) as [keyof TodoFilter, TodoFilter[keyof TodoFilter]][]).every(
-      ([property, value]) => value === 'all' || todo[property] === value,
-    ),
-  )
+
+  const params = new URLSearchParams()
+
+  for (const [key, value] of Object.entries(filter)) {
+    if (value !== 'all') {
+      params.set(key, value)
+    }
+  }
+
+  const query = params.toString()
+
+  return apiCall<Todo[]>(query ? `/todos?${query}` : "/todos")
 }
 
 export async function updateTodo(updated: Todo): Promise<Todo> {
-  const todos = fetchCachedTodos()
-  const updatedTodos = todos.map((todo) =>
-    todo.id === updated.id ? updated : todo,
-  )
 
-  saveCachedTodos(updatedTodos)
-  return updated
+  return apiCall<Todo>(`/todos/${updated.id}`, "PATCH",
+    {
+      status: updated.status,
+      priority: updated.priority,
+    }
+  )
 }
 
