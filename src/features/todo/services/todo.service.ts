@@ -45,6 +45,10 @@ export async function createTodo(input: CreateTodoInput): Promise<Todo> {
 
 }
 
+export async function getTodo(id:string): Promise<Todo> {
+  return apiCall<Todo>(`/todos/${id}`)
+}
+
 export async function filterTodosBy(
   filter: TodoFilter,
 ): Promise<Todo[]> {
