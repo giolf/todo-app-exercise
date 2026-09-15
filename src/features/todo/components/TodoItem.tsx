@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { TODO_STATUSES, TODO_PRIORITIES, STATUS_LABELS, KIND_LABELS } from '../const/todo.const.ts'
 import type { TodoStatus, Todo, TodoPriority } from '../types/todo.type.ts'
 
@@ -80,6 +81,7 @@ export default function TodoItem({ todo, onTodoChange }: { todo: Todo, onTodoCha
           ))}
         </select>
       </label>
+      <Link to={`/${todo.id}`}>View</Link>
     </article>
   )
 }
