@@ -14,6 +14,8 @@ export type BaseTodo = {
   completed: boolean
   status: TodoStatus
   priority: TodoPriority
+  createdAt: string
+  updatedAt: string
 }
 
 export type StandardTodo = BaseTodo & {
